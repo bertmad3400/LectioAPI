@@ -36,7 +36,7 @@ class Elev():
         return extract.extractLektier(lektierSoup)
 
     def getBeskeder(self, year, folderID):
-        otherASPData = {"__EVENTARGUMENT" : str(folderID), "s$m$ChooseTerm$term" : str(year), "s$m$Content$Content$ListGridSelectionTree$folders" : str(folderID), "s$m$Content$Content$MarkChkDD" : "-1"}
+        otherASPData = {"__EVENTARGUMENT" : str(folderID), "s$m$ChooseTerm$term" : str(year), "s$m$Content$Content$ListGridSelectionTree$folders" : str(folderID)}
         beskederSoup = self.postLoggedInPageSoup(f"{self.rootURL}beskeder2.aspx?elevid={self.elevID}", "s$m$Content$Content$ListGridSelectionTree", otherASPData)
 
         showAllEventTarget = extract.extractBeskederShowAllEventTarget(beskederSoup)
