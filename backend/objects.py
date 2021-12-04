@@ -1,4 +1,4 @@
-from backend.extract import getElevID, extractASPData, extractOpgaver
+from backend import extract
 from backend.scraping import getPageSoup, getLoggedInPageSoup
 
 
@@ -10,7 +10,7 @@ class Elev():
         self.frontPageSoup = getLoggedInPageSoup(self.rootURL, self.session)
 
         if self.frontPageSoup:
-            self.elevID = getElevID(self.frontPageSoup)
+            self.elevID = extract.getElevID(self.frontPageSoup)
         else:
             return False
 
@@ -18,7 +18,7 @@ class Elev():
         getResponse = getLoggedInPageSoup(URL, self.session)
 
         if getResponse:
-            ASPData = extractASPData(getResponse, eventTarget)
+            ASPData = extract.extractASPData(getResponse, eventTarget)
             ASPData.update(otherASPData)
 
             return getLoggedInPageSoup(URL, self.session, ASPData)
@@ -29,4 +29,4 @@ class Elev():
     def getOpgaver(self, year):
         otherASPData = {"s$m$ChooseTerm$term" : str(year), "s$m$Content$Content$ShowThisTermOnlyCB" : "on"}
         opgaverSoup = self.postLoggedInPageSoup(f"{self.rootURL}OpgaverElev.aspx?elevid={self.elevID}", "s$m$ChooseTerm$term", otherASPData)
-        return extractOpgaver(opgaverSoup)
+        return extract.extractOpgaver(opgaverSoup)
