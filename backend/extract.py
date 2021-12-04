@@ -9,6 +9,7 @@ from urllib.parse import urlparse, parse_qs
 import re
 
 showAllEventTargetPattern = re.compile(r's\$m\$Content\$Content\$threadGV\$ctl.*?(?=")')
+beskedIDPattern = re.compile(r"(?<='__Page',').*?(?=')")
 
 def cleanText(text):
     return unicodedata.normalize("NFKD", text.replace("\t", "").replace("\n\n", "\n").strip("\n"))
@@ -111,7 +112,7 @@ def extractBeskeder(pageSoup):
     for row in itertools.islice(titleSoup.find_all("th"), 3, 7):
         titles.append(cleanText(row.text))
 
-    titles.append("Vedhæftet?")
+    titles.extend(["Vedhæftet?", "beskedID"])
 
     titleSoup.decompose()
 
@@ -123,5 +124,7 @@ def extractBeskeder(pageSoup):
             details[-1].append(cleanText(row.text))
 
         details[-1].append("Ja" if collumn.find_all("td")[3].select('img[src*="/lectio/img/doc.gif"]') else "Nej")
+
+        details[-1].append(beskedIDPattern.search(collumn.find_all("td")[3].select_one("a[onclick]").get("onclick")).group())
 
     return [{titles[i]:detail for i,detail in enumerate(detailList)} for detailList in details]
