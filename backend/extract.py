@@ -1,4 +1,14 @@
+from urllib.parse import urlparse, parse_qs
+
 import re
+
+# Function for extracting the elevid from any page where the user is logged in
+def getElevID(pageSoup):
+    rootURL = pageSoup.find("meta", {"name" : "msapplication-starturl"}).get("content")
+
+    parsedURL = urlparse(rootURL)
+
+    return parse_qs(parsedURL.query)['elevid'][0]
 
 def extractASPData(pageSoup, eventTarget):
     ASPData = {"__EVENTTARGET" : eventTarget}
