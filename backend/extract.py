@@ -1,3 +1,6 @@
+# For removing weird characthers that sometimes exist in text scraped from the internet
+import unicodedata
+
 from urllib.parse import urlparse, parse_qs
 
 import re
@@ -31,3 +34,19 @@ def extractGymnasiumList(pageSoup):
             continue
 
     return gymnasiumList
+
+def extractOpgaver(pageSoup):
+    opgaveSoup = pageSoup.select("table#s_m_Content_Content_ExerciseGV tbody:first-child")[0]
+
+    titlesSoup = opgaveSoup.select("tr:first-child")[0]
+
+    titles = [element.text for element in titlesSoup.find_all("th")]
+
+    titlesSoup.decompose()
+
+    details = []
+
+    for collumn in opgaveSoup.find_all("tr"):
+        details.append([unicodedata.normalize("NFKD", element.text.replace("\t", "").replace("\n", "")) for element in collumn.find_all("td")])
+
+    return [{titles[i]:detail for i,detail in enumerate(detailList)} for detailList in details]
