@@ -56,3 +56,26 @@ def extractOpgaver(pageSoup):
         details[-1].append(f'https://lectio.dk{collumn.find("a").get("href")}')
 
     return [{titles[i]:detail for i,detail in enumerate(detailList)} for detailList in details]
+
+def extractLektier(pageSoup):
+    lektierSoup = pageSoup.select("div#s_m_Content_Content_contentPnl table.ls-table-layout1:first-child")[0]
+
+    titles = [element.text for element in lektierSoup.select("thead tr:first-child")[0].find_all("th")]
+
+    titles.extend(["Time-link", "Lektie-link"])
+
+    details = []
+
+    for collumn in lektierSoup.find("tbody").find_all("tr"):
+        details.append([cleanText(collumn.find("th").text)])
+        details[-1].extend([ cleanText(element.text) for element in collumn.find_all("td")])
+
+        links = collumn.find_all("a")
+        details[-1].append(f"https://lectio.dk{links[1].get('href')}")
+
+        try:
+            details[-1].append(f"https://lectio.dk{links[2].get('href')}")
+        except IndexError:
+            details[-1].append("")
+
+    return [{titles[i]:detail for i,detail in enumerate(detailList)} for detailList in details]
