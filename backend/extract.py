@@ -6,7 +6,7 @@ from urllib.parse import urlparse, parse_qs
 import re
 
 def cleanText(text):
-    return unicodedata.normalize("NFKD", text.replace("\t", "").replace("\n", ""))
+    return unicodedata.normalize("NFKD", text.replace("\t", "").replace("\n\n", "\n").strip("\n"))
 
 # Function for extracting the elevid from any page where the user is logged in
 def getElevID(pageSoup):
