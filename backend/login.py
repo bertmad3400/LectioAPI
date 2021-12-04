@@ -11,8 +11,6 @@ def loginUser(username, password, gymnasiumNumber):
     with requests.session() as session:
         session.headers['user-agent'] = 'Mozilla/5.0'
 
-        print(loginURL)
-
         loginPageSoup = getPageSoup(loginURL, session=session)
 
         ASPData = extractASPData(loginPageSoup, "m$Content$submitbtn2")
