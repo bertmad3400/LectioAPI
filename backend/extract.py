@@ -42,11 +42,14 @@ def extractOpgaver(pageSoup):
 
     titles = [element.text for element in titlesSoup.find_all("th")]
 
+    titles.append("Link")
+
     titlesSoup.decompose()
 
     details = []
 
     for collumn in opgaveSoup.find_all("tr"):
         details.append([unicodedata.normalize("NFKD", element.text.replace("\t", "").replace("\n", "")) for element in collumn.find_all("td")])
+        details[-1].append(f'https://lectio.dk{collumn.find("a").get("href")}')
 
     return [{titles[i]:detail for i,detail in enumerate(detailList)} for detailList in details]
