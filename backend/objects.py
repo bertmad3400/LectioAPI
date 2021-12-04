@@ -45,3 +45,8 @@ class Elev():
             beskederSoup = self.postLoggedInPageSoup(f"{self.rootURL}beskeder2.aspx?elevid={self.elevID}", showAllEventTarget, otherASPData)
 
         return extract.extractBeskeder(beskederSoup)
+
+    def getBeskedContent(self, beskedID):
+        beskedSoup = self.postLoggedInPageSoup(f"{self.rootURL}beskeder2.aspx?elevid={self.elevID}", "__Page", {"__EVENTARGUMENT" : beskedID})
+
+        return extract.extractBesked(beskedSoup)
