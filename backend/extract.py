@@ -10,6 +10,7 @@ import re
 
 showAllEventTargetPattern = re.compile(r's\$m\$Content\$Content\$threadGV\$ctl.*?(?=")')
 beskedIDPattern = re.compile(r"(?<='__Page',').*?(?=')")
+beskedPadPattern = re.compile(r"(?<=padding-left:)[0-9\.]*?(?=em)")
 
 def cleanText(text):
     return unicodedata.normalize("NFKD", text.replace("\t", "").replace("\n\n", "\n").strip("\n"))
@@ -128,3 +129,50 @@ def extractBeskeder(pageSoup):
         details[-1].append(beskedIDPattern.search(collumn.find_all("td")[3].select_one("a[onclick]").get("onclick")).group())
 
     return [{titles[i]:detail for i,detail in enumerate(detailList)} for detailList in details]
+
+def extractBeskedContent(beskedSoup, beskedDictsList):
+    for besked in beskedSoup.find_all("li"):
+
+        try:
+            besked.get("style")
+        except AttributeError:
+            continue
+
+        beskedPad = float(beskedPadPattern.search(besked.get("style")).group())
+
+        newBeskedDict = {
+                    "title" : cleanText(besked.find("h4").text),
+                    "forfatter" : cleanText(besked.find("span").text),
+                    "indhold" : cleanText(besked.find_all("div")[-1].text),
+                    "pad" : str(beskedPad),
+                    "replies" : []
+                }
+
+
+
+        if beskedPad > float(beskedDictsList[-1]["pad"]):
+            beskedDictsList[-1]["replies"].append(newBeskedDict)
+            besked.decompose()
+            extractBeskedContent(beskedSoup, beskedDictsList[-1]["replies"])
+        elif beskedPad == float(beskedDictsList[-1]["pad"]):
+            beskedDictsList.append(newBeskedDict)
+            besked.decompose()
+        else:
+            break
+
+
+
+def extractBesked(pageSoup):
+    beskedSoup = pageSoup.select_one("ul#s_m_Content_Content_ThreadList")
+
+    beskeder = [{
+            "title" : cleanText(pageSoup.select_one("table.ShowMessageRecipients td.textLeft").text),
+            "Afsender" : cleanText(pageSoup.select("table.ShowMessageRecipients span")[0].text),
+            "Modtager" : cleanText(pageSoup.select("table.ShowMessageRecipients span")[1].text),
+            "pad" : "-1",
+            "replies" : []
+        }]
+
+    extractBeskedContent(beskedSoup, beskeder)
+
+    return beskeder
