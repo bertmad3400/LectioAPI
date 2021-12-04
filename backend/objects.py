@@ -1,4 +1,4 @@
-from backend.extract import getElevID, extractASPData
+from backend.extract import getElevID, extractASPData, extractOpgaver
 from backend.scraping import getPageSoup, getLoggedInPageSoup
 
 
@@ -25,3 +25,8 @@ class Elev():
 
         else:
             return None
+
+    def getOpgaver(self, year):
+        otherASPData = {"s$m$ChooseTerm$term" : str(year), "s$m$Content$Content$ShowThisTermOnlyCB" : "on"}
+        opgaverSoup = self.postLoggedInPageSoup(f"{self.rootURL}OpgaverElev.aspx?elevid={self.elevID}", "s$m$ChooseTerm$term", otherASPData)
+        return extractOpgaver(opgaverSoup)
