@@ -34,3 +34,14 @@ class Elev():
     def getLektier(self):
         lektierSoup = getLoggedInPageSoup(f"{self.rootURL}material_lektieoversigt.aspx?elevid={self.elevID}", self.session)
         return extract.extractLektier(lektierSoup)
+
+    def getBeskeder(self, year, folderID):
+        otherASPData = {"__EVENTARGUMENT" : str(folderID), "s$m$ChooseTerm$term" : str(year), "s$m$Content$Content$ListGridSelectionTree$folders" : str(folderID), "s$m$Content$Content$MarkChkDD" : "-1"}
+        beskederSoup = self.postLoggedInPageSoup(f"{self.rootURL}beskeder2.aspx?elevid={self.elevID}", "s$m$Content$Content$ListGridSelectionTree", otherASPData)
+
+        showAllEventTarget = extract.extractBeskederShowAllEventTarget(beskederSoup)
+        if showAllEventTarget:
+            otherASPData["__EVENTARGUMENT"] = ""
+            beskederSoup = self.postLoggedInPageSoup(f"{self.rootURL}beskeder2.aspx?elevid={self.elevID}", showAllEventTarget, otherASPData)
+
+        return extract.extractBeskeder(beskederSoup)
