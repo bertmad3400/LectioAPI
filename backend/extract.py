@@ -8,7 +8,7 @@ from urllib.parse import urlparse, parse_qs
 
 import re
 
-showAllEventTarget = re.compile(r's\$m\$Content\$Content\$threadGV\$ctl.*?(?=")')
+showAllEventTargetPattern = re.compile(r's\$m\$Content\$Content\$threadGV\$ctl.*?(?=")')
 
 def cleanText(text):
     return unicodedata.normalize("NFKD", text.replace("\t", "").replace("\n\n", "\n").strip("\n"))
@@ -96,10 +96,7 @@ def extractBeskederShowAllEventTarget(pageSoup):
 
     javascriptText = pageNumberSoup.find_all("td")[-1].find("a").get("href")
 
-    return showAllEventTarget.search(javascriptText).group()
-
-
-
+    return showAllEventTargetPattern.search(javascriptText).group()
 
 def extractBeskeder(pageSoup):
     beskederSoup = pageSoup.select("table#s_m_Content_Content_threadGV_ctl00 tbody:first-child")[0]
