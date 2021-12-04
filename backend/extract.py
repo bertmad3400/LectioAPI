@@ -1,9 +1,14 @@
 # For removing weird characthers that sometimes exist in text scraped from the internet
 import unicodedata
 
+# For iterating over parts of list
+import itertools
+
 from urllib.parse import urlparse, parse_qs
 
 import re
+
+showAllEventTarget = re.compile(r's\$m\$Content\$Content\$threadGV\$ctl.*?(?=")')
 
 def cleanText(text):
     return unicodedata.normalize("NFKD", text.replace("\t", "").replace("\n\n", "\n").strip("\n"))
@@ -77,5 +82,46 @@ def extractLektier(pageSoup):
             details[-1].append(f"https://lectio.dk{links[2].get('href')}")
         except IndexError:
             details[-1].append("")
+
+    return [{titles[i]:detail for i,detail in enumerate(detailList)} for detailList in details]
+
+def extractBeskederShowAllEventTarget(pageSoup):
+    try:
+        pageNumberSoup = pageSoup.select("table#s_m_Content_Content_threadGV_ctl00 tbody tr.paging")[0]
+    except:
+        return None
+
+    javascriptText = pageNumberSoup.find_all("td")[-1].find("a").get("href")
+
+    return showAllEventTarget.search(javascriptText).group()
+
+
+
+
+def extractBeskeder(pageSoup):
+    beskederSoup = pageSoup.select("table#s_m_Content_Content_threadGV_ctl00 tbody:first-child")[0]
+
+    for element in beskederSoup.select("tr.paging"):
+        element.decompose()
+
+    titleSoup = beskederSoup.find_all("tr")[0]
+
+    titles = []
+
+    for row in itertools.islice(titleSoup.find_all("th"), 3, 7):
+        titles.append(cleanText(row.text))
+
+    titles.append("Vedhæftet?")
+
+    titleSoup.decompose()
+
+    details = []
+
+    for collumn in beskederSoup.find_all("tr"):
+        details.append([])
+        for row in itertools.islice(collumn.find_all("td"), 3, 7):
+            details[-1].append(cleanText(row.text))
+
+        details[-1].append("Ja" if collumn.find_all("td")[3].select('img[src*="/lectio/img/doc.gif"]') else "Nej")
 
     return [{titles[i]:detail for i,detail in enumerate(detailList)} for detailList in details]
