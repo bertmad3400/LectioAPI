@@ -25,7 +25,10 @@ def extractASPData(pageSoup, eventTarget):
     ASPData = {"__EVENTTARGET" : eventTarget}
 
     for name in ["__VIEWSTATEX", "__EVENTVALIDATION", "__EVENTARGUMENT", "__SCROLLPOSITION", "__VIEWSTATEY_KEY", "__VIEWSTATE", "masterfootervalue"]:
-        ASPData[name] = pageSoup.find("input", {"name":name}).get("value")
+        try:
+            ASPData[name] = pageSoup.find("input", {"name":name}).get("value")
+        except AttributeError:
+            ASPData[name] = ""
 
     return ASPData
 
