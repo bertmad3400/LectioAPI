@@ -45,6 +45,12 @@ def extractUserObject():
     elif request.endpoint != "login":
         abort(401)
 
+def returnAPIResult(APIResults):
+    if APIResults == None:
+        abort(401)
+    else:
+        return Response(json.dumps(APIResults), mimetype="application/json")
+
 @app.route("/")
 def redirectToGithub():
     return redirect("https://github.com/bertmad3400/LectioAPI")
