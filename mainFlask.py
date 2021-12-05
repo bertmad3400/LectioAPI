@@ -90,7 +90,19 @@ def extractUserObject():
 
 def returnAPIResult(APIResults):
     if APIResults == None:
-        abort(401)
+
+        externalID = request.cookies.get("LectioAPI-ID", default=None)
+
+        resp = make_response("Couldn't access the relevant page", 401)
+
+        if externalID:
+            conn = sqlite3.connect(dbName)
+            removeElev(conn, externalID, False)
+            conn.close()
+
+            resp.set_cookie("LectioAPI-ID", "", expires=0, secure = True, httponly = True)
+
+        return resp
     else:
         return Response(json.dumps(APIResults), mimetype="application/json")
 
