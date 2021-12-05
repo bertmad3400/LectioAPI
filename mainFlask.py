@@ -9,6 +9,8 @@ import os
 
 from Crypto.Hash import SHA256
 
+from backend.scraping import getPageSoup
+from backend.extract import extractGymnasiumList
 from backend.login import loginUser
 from backend.objects import Elev
 
@@ -17,6 +19,9 @@ app.static_folder = "./static"
 app.template_folder = "./templates"
 
 dbName = "users.db"
+
+# Endpoints that are allowed without logging ind
+allowedEndpoints = ["listGymnasiums", "login", "redirectToGithub"]
 
 def initiateDB():
     if os.path.exists(dbName):
@@ -83,9 +88,9 @@ def extractUserObject():
 
     externalID = request.cookies.get("LectioAPI-ID", default=None)
 
-    if not request.endpoint in ["login", "redirectToGithub"] and externalID:
+    if not request.endpoint in allowedEndpoints and externalID:
         g.currentElev = loadElev(externalID)
-    elif not request.endpoint in ["login", "redirectToGithub"]:
+    elif not request.endpoint in allowedEndpoints:
         abort(401)
 
 def returnAPIResult(APIResults):
@@ -109,6 +114,11 @@ def returnAPIResult(APIResults):
 @app.route("/")
 def redirectToGithub():
     return redirect("https://github.com/bertmad3400/LectioAPI")
+
+@app.route("/gymnasieListe/")
+def listGymnasiums():
+    return returnAPIResult(extractGymnasiumList(getPageSoup("https://www.lectio.dk/lectio/login_list.aspx")))
+
 
 @app.route("/login", methods=["POST"])
 def login():
