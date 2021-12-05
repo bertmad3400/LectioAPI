@@ -108,6 +108,11 @@ def queryOpgaver(year):
     APIResponse = g.currentElev.getOpgaver(year)
     return returnAPIResult(APIResponse)
 
+@app.route("/lektieList/")
+def queryLektier():
+    APIResponse = g.currentElev.getLektier()
+    return returnAPIResult(APIResponse)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
