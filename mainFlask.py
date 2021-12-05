@@ -34,12 +34,14 @@ def initiateDB():
 def createInternalID(username, password):
     return SHA256.new(f"{username}%%%{password}".encode("utf-8")).hexdigest()
 
-def removeElev(username, password):
-    internalID = createInternalID(username, password)
+def removeElev(conn, ID, internal):
+    cur = conn.cursor()
+    if internal:
+        cur.execute("DELETE FROM users WHERE internalID=?", (ID,))
+    else:
+        cur.execute("DELETE FROM users WHERE externalID=?", (ID,))
 
-    for elevID in list(elevDicts.keys()):
-        if elevDicts[elevID]["internalID"] == internalID:
-            del elevDicts[elevID]
+    conn.commit()
 
 def addElev(username, password, elevObject):
 
