@@ -60,7 +60,20 @@ def addElev(username, password, elevObject):
 
     return externalID
 
-    return currentElevID
+def loadElev(externalID):
+
+    conn = sqlite3.connect(dbName)
+    cur = conn.cursor()
+
+    cur.execute("SELECT elevid, gymnasiumnumber, sessionobject FROM users WHERE externalID=?", (externalID,))
+
+    dbResults = cur.fetchone()
+
+    currentElev = Elev(pickle.loads(dbResults[2]), dbResults[1], elevID = dbResults[0])
+
+    conn.close()
+
+    return currentElev
 
 @app.before_request
 def extractUserObject():
