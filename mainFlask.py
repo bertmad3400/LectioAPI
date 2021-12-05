@@ -45,13 +45,20 @@ def removeElev(conn, ID, internal):
 
 def addElev(username, password, elevObject):
 
+    conn = sqlite3.connect(dbName)
+
     internalID = createInternalID(username, password)
+    externalID = str(uuid.uuid4())
 
-    removeElev(username, password)
+    removeElev(conn, internalID, True)
 
-    currentElevID = str(uuid.uuid4())
+    cur = conn.cursor()
+    cur.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?)", (internalID, externalID, elevObject.elevID, elevObject.gymnasiumNumber, pickle.dumps(elevObject.session)))
 
-    elevDicts[currentElevID] = {"elevObject" : elevObject, "internalID" : internalID}
+    conn.commit()
+    conn.close()
+
+    return externalID
 
     return currentElevID
 
