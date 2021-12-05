@@ -120,7 +120,7 @@ def listGymnasiums():
     return returnAPIResult(extractGymnasiumList(getPageSoup("https://www.lectio.dk/lectio/login_list.aspx?showall=1")))
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/login/", methods=["POST"])
 def login():
     parameters = request.get_json(force=True)
 
@@ -173,7 +173,7 @@ def queryOpgaver(year):
     APIResponse = g.currentElev.getOpgaver(year)
     return returnAPIResult(APIResponse)
 
-@app.route("/lektieList/")
+@app.route("/lektieListe/")
 def queryLektier():
     APIResponse = g.currentElev.getLektier()
     return returnAPIResult(APIResponse)
