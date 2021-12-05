@@ -163,8 +163,8 @@ def extractBesked(pageSoup):
 
     beskeder = [{
             "title" : cleanText(pageSoup.select_one("table.ShowMessageRecipients td.textLeft").text),
-            "Afsender" : cleanText(pageSoup.select("table.ShowMessageRecipients span")[0].text),
-            "Modtager" : cleanText(pageSoup.select("table.ShowMessageRecipients span")[1].text),
+            "Afsender" : cleanText(pageSoup.select("table.ShowMessageRecipients tbody tr:last-child table tbody tr:first-child td:last-child")[0].text),
+            "Modtager" : cleanText(pageSoup.select("table.ShowMessageRecipients tbody tr:last-child table tbody tr:last-child td:last-child")[0].text),
             "pad" : "-1",
             "replies" : []
         }]
