@@ -77,10 +77,14 @@ def loadElev(externalID):
 
 @app.before_request
 def extractUserObject():
-    elevID = request.cookies.get("LectioAPI-ID", default=None)
+    conn = sqlite3.connect(dbName)
+    cur = conn.cursor()
+    cur.execute("SELECT internalID, externalID, elevid, gymnasiumnumber FROM users")
 
-    if not request.endpoint in ["login", "redirectToGithub"] and elevID:
-        g.currentElev = elevDicts[elevID]["elevObject"]
+    externalID = request.cookies.get("LectioAPI-ID", default=None)
+
+    if not request.endpoint in ["login", "redirectToGithub"] and externalID:
+        g.currentElev = loadElev(externalID)
     elif not request.endpoint in ["login", "redirectToGithub"]:
         abort(401)
 
