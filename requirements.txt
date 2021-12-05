@@ -1,0 +1,5 @@
+flask
+pycryptodome
+bs4
+requests
+html5lib
