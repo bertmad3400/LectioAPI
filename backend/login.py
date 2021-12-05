@@ -1,4 +1,4 @@
-from backend.scraping import getPageSoup
+from backend.scraping import getPageSoup, getLoggedInPageSoup
 from backend.extract import extractASPData
 
 import requests
@@ -20,4 +20,7 @@ def loginUser(username, password, gymnasiumNumber):
 
         session.post(loginURL, data=ASPData)
 
-    return session
+        if getLoggedInPageSoup(f"https://www.lectio.dk/lectio/{gymnasiumNumber}/forside.aspx", session):
+            return session
+        else:
+            return None
