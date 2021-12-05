@@ -80,10 +80,12 @@ Udover bare besked-titlerne og andre detaljer, returneres der også et ID for hv
 #### [/beskedIndhold/[beskedID]/](https://bertmad.dk/api/lectio/beskedIndhold/)
 På denne route kan indholdet af individuelle beskeder returneres som en nestet JSON struktur der repræsentere hvem der svarede hvem vist visuelt på Lectio. beskedID er det ID som du fandt i den tidligere route.
 
+#### [/skema/[year]/[week]/](https://bertmad.dk/api/lectio/skema/)
+På denne route kan indholdet af dit skema for en given uge i et givent år. Hvis du indtaster en uge som ikke findes i systemet vil den retunere en 400 respons som lyder "Error scraping the page, please check your request"
+
 #### Fremtidige routes
 Udover disse routes er der også planer om at implementere routes for følgende funktioner (engang i fremtiden):
 
-- Skema (bliver nok den næste, er bare et mareridt at parse)
 - Fravær
 - Dokumenter
 - Karakterer
