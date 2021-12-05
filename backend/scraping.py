@@ -18,7 +18,7 @@ def getLoggedInPageSoup(URL, session, ASPData = None):
         pageResponse = session.get(URL)
 
     # To check if the URL has redirected to the loginpage, in which case the session is invalid
-    if pageResponse.url.startswith("https://www.lectio.dk/lectio/3/login.aspx?prevurl"):
+    if "login.aspx?prevurl" in pageResponse.url:
         return None
     else:
         return bs(pageResponse.content, "html5lib")
