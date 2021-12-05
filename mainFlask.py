@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, request, abort, redirect, make_response
+from flask import Flask, render_template, Response, request, abort, redirect, make_response, g
 import json
 
 import uuid
@@ -36,6 +36,14 @@ def addElev(username, password, elevObject):
 
     return currentElevID
 
+@app.before_request
+def extractUserObject():
+    elevID = request.cookies.get("LectioAPI-ID", default=None)
+
+    if request.endpoint != "login" and elevID:
+        g.currentElev = elevDicts[elevID]["elevObject"]
+    elif request.endpoint != "login":
+        abort(401)
 
 @app.route("/")
 def redirectToGithub():
