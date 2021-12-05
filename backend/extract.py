@@ -209,7 +209,7 @@ def extractSkema(pageSoup):
         skema[titles[i]]["skemaBrikker"] = []
 
         for skemaPiece in day.select("a.s2bgbox"):
-            currentPiece = {}
+            currentPiece = {"status" : "Uændret"}
             currentPiece["link"] = f"https://lectio.dk{skemaPiece.get('href')}"
             pieceInformations = skemaPiece.get("data-additionalinfo").split("\n")
 
@@ -218,6 +218,8 @@ def extractSkema(pageSoup):
                     date = pieceInformation.split(" ")
                     currentPiece["start"] = f"{date[0]} {date[1]}"
                     currentPiece["slut"] = f"{date[0]} {date[3]}" if "til" in date else ""
+                elif pieceInformation in ["Aflyst!", "Ændret!"]:
+                    currentPiece["status"] = pieceInformation
                 else:
                     for informationType in ["Hold", "Lærer", "Lokale"]:
                         if informationType.lower() in pieceInformation.lower():
