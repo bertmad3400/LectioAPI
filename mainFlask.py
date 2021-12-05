@@ -1,9 +1,12 @@
-from flask import Flask, render_template, Response, request, abort, redirect
+from flask import Flask, render_template, Response, request, abort, redirect, make_response
 import json
 
 import uuid
 
 from Crypto.Hash import SHA256
+
+from backend.login import loginUser
+from backend.objects import Elev
 
 app = Flask(__name__)
 app.static_folder = "./static"
@@ -37,6 +40,29 @@ def addElev(username, password, elevObject):
 @app.route("/")
 def redirectToGithub():
     return redirect("https://github.com/bertmad3400/LectioAPI")
+
+@app.route("/login", methods=["POST"])
+def login():
+    parameters = request.get_json(force=True)
+
+    userSession = loginUser(parameters["username"], parameters["password"], parameters["gymnasiumNumber"])
+
+    if userSession:
+        try:
+            currentElev = Elev(userSession, 3)
+        except TypeError:
+            abort(500)
+
+        currentElevID = addElev(parameters["username"], parameters["password"],currentElev)
+
+        resp = make_response("user succesfully logged in")
+
+        resp.set_cookie("LectioAPI-ID", value = currentElevID, secure = True, httponly = True)
+
+        return resp
+
+    else:
+        abort(500)
 
 if __name__ == "__main__":
     app.run(debug=True)
