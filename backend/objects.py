@@ -3,16 +3,19 @@ from backend.scraping import getPageSoup, getLoggedInPageSoup
 
 
 class Elev():
-    def __init__(self, session, gymnasiumNumber):
+    def __init__(self, session, gymnasiumNumber, elevID = None):
         self.session = session
         self.rootURL = f"https://www.lectio.dk/lectio/{gymnasiumNumber}/"
 
-        self.frontPageSoup = getLoggedInPageSoup(self.rootURL, self.session)
 
-        if self.frontPageSoup:
-            self.elevID = extract.getElevID(self.frontPageSoup)
+        if elevID:
+            self.elevID = elevID
         else:
-            return False
+            frontPageSoup = getLoggedInPageSoup(self.rootURL, self.session)
+            if frontPageSoup:
+                self.elevID = extract.getElevID(frontPageSoup)
+            else:
+                return False
 
     def postLoggedInPageSoup(self, URL, eventTarget, otherASPData):
         getResponse = getLoggedInPageSoup(URL, self.session)
