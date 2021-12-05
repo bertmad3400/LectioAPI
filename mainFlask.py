@@ -3,6 +3,10 @@ import json
 
 import uuid
 
+import sqlite3
+import pickle
+import os
+
 from Crypto.Hash import SHA256
 
 from backend.login import loginUser
@@ -12,7 +16,20 @@ app = Flask(__name__)
 app.static_folder = "./static"
 app.template_folder = "./templates"
 
-elevDicts = {}
+dbName = "users.db"
+
+def initiateDB():
+    if os.path.exists(dbName):
+        os.remove(dbName)
+
+    conn = sqlite3.connect(dbName)
+    cur = conn.cursor()
+
+    cur.execute("CREATE TABLE users (internalID text PRIMARY KEY, externalID text, elevid integer, gymnasiumnumber integer, sessionobject blob)")
+
+    conn.commit()
+
+    conn.close()
 
 def createInternalID(username, password):
     return SHA256.new(f"{username}%%%{password}".encode("utf-8")).hexdigest()
