@@ -103,5 +103,11 @@ def queryBeskedContent(beskedID):
     APIResponse = g.currentElev.getBeskedContent(beskedID)
     return returnAPIResult(APIResponse)
 
+@app.route("/opgaveListe/<int:year>/")
+def queryOpgaver(year):
+    APIResponse = g.currentElev.getOpgaver(year)
+    return returnAPIResult(APIResponse)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
