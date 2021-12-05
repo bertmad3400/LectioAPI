@@ -4,6 +4,9 @@ import unicodedata
 # For iterating over parts of list
 import itertools
 
+# For parsing dates from skema
+from datetime import datetime
+
 from urllib.parse import urlparse, parse_qs
 
 import re
@@ -11,6 +14,8 @@ import re
 showAllEventTargetPattern = re.compile(r's\$m\$Content\$Content\$threadGV\$ctl.*?(?=")')
 beskedIDPattern = re.compile(r"(?<='__Page',').*?(?=')")
 beskedPadPattern = re.compile(r"(?<=padding-left:)[0-9\.]*?(?=em)")
+
+timePattern = re.compile(r"\d{1,2}\/\d{1,2}-\d{4} \d{2}:\d{2}")
 
 def cleanText(text):
     return unicodedata.normalize("NFKD", text.replace("\t", "").replace("\n\n", "\n").strip("\n"))
@@ -172,3 +177,52 @@ def extractBesked(pageSoup):
     extractBeskedContent(beskedSoup, beskeder)
 
     return beskeder
+
+def extractSkema(pageSoup):
+    skemaSoup = pageSoup.select_one("table#s_m_Content_Content_SkemaNyMedNavigation_skema_skematabel tbody")
+
+    titleSoup = skemaSoup.select("tr.s2dayHeader td")
+    # The first element is just empty, so remove that
+    titleSoup.pop(0).decompose()
+
+    titles = [cleanText(element.text) for element in titleSoup]
+
+    informationHeaders = skemaSoup.select("td.s2infoHeader")
+    # The first element is just empty, so remove that
+    informationHeaders.pop(0).decompose()
+
+    informations = []
+
+    for header in informationHeaders:
+        informations.append([cleanText(element.text) for element in header.select("a.s2skemabrik")])
+
+    skemaDays = skemaSoup.select("div.s2skemabrikcontainer")
+    # The first element is times (which we don't need), so remove that
+    skemaDays.pop(0).decompose()
+
+    skema = {}
+
+    for i,day in enumerate(skemaDays):
+        skema[titles[i]] = {}
+        skema[titles[i]]["informationer"] = informations[i]
+
+        skema[titles[i]]["skemaBrikker"] = []
+
+        for skemaPiece in day.select("a.s2bgbox"):
+            currentPiece = {}
+            currentPiece["link"] = f"https://lectio.dk{skemaPiece.get('href')}"
+            pieceInformations = skemaPiece.get("data-additionalinfo").split("\n")
+
+            for pieceInformation in pieceInformations:
+                if timePattern.match(pieceInformation):
+                    date = pieceInformation.split(" ")
+                    currentPiece["start"] = f"{date[0]} {date[1]}"
+                    currentPiece["slut"] = f"{date[0]} {date[3]}" if "til" in date else ""
+                else:
+                    for informationType in ["Hold", "Lærer", "Lokale"]:
+                        if informationType.lower() in pieceInformation.lower():
+                            currentPiece[informationType] = pieceInformation.split(" :")[-1]
+
+            skema[titles[i]]["skemaBrikker"].append(currentPiece)
+
+    return skema
