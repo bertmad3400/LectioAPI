@@ -21,4 +21,8 @@ def getLoggedInPageSoup(URL, session, ASPData = None):
     if "login.aspx?prevurl" in pageResponse.url:
         return None
     else:
-        return bs(pageResponse.content, "html5lib")
+        pageSoup = bs(pageResponse.content, "html5lib")
+        if "Der opstod en ukendt fejl" in pageSoup.text:
+            return False
+        else:
+            return pageSoup

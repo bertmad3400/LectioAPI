@@ -108,6 +108,8 @@ def returnAPIResult(APIResults):
             resp.set_cookie("LectioAPI-ID", "", expires=0, secure = True, httponly = True)
 
         return resp
+    elif APIResults == False:
+        return make_response("Error scraping the page, please check your request", 400)
     else:
         return Response(json.dumps(APIResults), mimetype="application/json")
 
