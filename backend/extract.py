@@ -148,8 +148,6 @@ def extractBeskedContent(beskedSoup, beskedDictsList):
                     "replies" : []
                 }
 
-
-
         if beskedPad > float(beskedDictsList[-1]["pad"]):
             beskedDictsList[-1]["replies"].append(newBeskedDict)
             besked.decompose()
@@ -159,8 +157,6 @@ def extractBeskedContent(beskedSoup, beskedDictsList):
             besked.decompose()
         else:
             break
-
-
 
 def extractBesked(pageSoup):
     beskedSoup = pageSoup.select_one("ul#s_m_Content_Content_ThreadList")
