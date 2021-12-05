@@ -5,8 +5,8 @@ from backend.scraping import getPageSoup, getLoggedInPageSoup
 class Elev():
     def __init__(self, session, gymnasiumNumber, elevID = None):
         self.session = session
+        self.gymnasiumNumber = gymnasiumNumber
         self.rootURL = f"https://www.lectio.dk/lectio/{gymnasiumNumber}/"
-
 
         if elevID:
             self.elevID = elevID
