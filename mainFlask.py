@@ -98,5 +98,10 @@ def queryBeskeder(beskedClass, year):
     else:
         return make_response("Besked class not found", 404)
 
+@app.route("/beskedIndhold/<string:beskedID>/")
+def queryBeskedContent(beskedID):
+    APIResponse = g.currentElev.getBeskedContent(beskedID)
+    return returnAPIResult(APIResponse)
+
 if __name__ == "__main__":
     app.run(debug=True)
