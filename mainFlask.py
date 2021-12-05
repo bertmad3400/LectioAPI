@@ -180,6 +180,11 @@ def queryLektier():
     APIResponse = g.currentElev.getLektier()
     return returnAPIResult(APIResponse)
 
+@app.route("/skema/<int:year>/<int:week>/")
+def querySkema(year, week):
+    APIResponse = g.currentElev.getSkema(year, week)
+    return returnAPIResult(APIResponse)
+
 
 if __name__ == "__main__":
     initiateDB()
