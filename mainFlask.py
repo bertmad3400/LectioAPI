@@ -117,7 +117,7 @@ def redirectToGithub():
 
 @app.route("/gymnasieListe/")
 def listGymnasiums():
-    return returnAPIResult(extractGymnasiumList(getPageSoup("https://www.lectio.dk/lectio/login_list.aspx")))
+    return returnAPIResult(extractGymnasiumList(getPageSoup("https://www.lectio.dk/lectio/login_list.aspx?showall=1")))
 
 
 @app.route("/login", methods=["POST"])
