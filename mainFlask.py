@@ -78,5 +78,25 @@ def login():
     else:
         abort(500)
 
+@app.route("/beskedListe/<string:beskedClass>/<int:year>/")
+def queryBeskeder(beskedClass, year):
+    beskedClasses = {
+            "nyeste" : "-70",
+            "ulæste" : "-40",
+            "flag" : "-50",
+            "slettede" : "-60",
+            "egne" : "-10",
+            "sendte" : "-80",
+            "hold" : "-20",
+            "indbyggedegrupper" : "-30",
+            "egnegrupper" : "-35"
+            }
+
+    if beskedClass in beskedClasses:
+        APIResponse = g.currentElev.getBeskeder(year, beskedClasses[beskedClass])
+        return returnAPIResult(APIResponse)
+    else:
+        return make_response("Besked class not found", 404)
+
 if __name__ == "__main__":
     app.run(debug=True)
