@@ -40,9 +40,9 @@ def addElev(username, password, elevObject):
 def extractUserObject():
     elevID = request.cookies.get("LectioAPI-ID", default=None)
 
-    if request.endpoint != "login" and elevID:
+    if not request.endpoint in ["login", "redirectToGithub"] and elevID:
         g.currentElev = elevDicts[elevID]["elevObject"]
-    elif request.endpoint != "login":
+    elif not request.endpoint in ["login", "redirectToGithub"]:
         abort(401)
 
 def returnAPIResult(APIResults):
