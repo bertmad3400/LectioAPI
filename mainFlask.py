@@ -170,4 +170,5 @@ def queryLektier():
 
 
 if __name__ == "__main__":
+    initiateDB()
     app.run(debug=True)
