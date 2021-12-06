@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='CSS/authentification.css') }}">
+{% endblock %}
+{% block body %}
+<div class="form-wrapper">
+	<h2 class="title">Login - Lectio API</h2>
+
+	{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				  <ul class="errors">
+					{% for msg in messages %}
+						  <li class="error">
+							  <i class="fas fa-exclamation"></i> <span class="error-message">{{ msg }}</span>
+						  </li>
+					{% endfor %}
+				  </ul>
+			{% endif %}
+	{% endwith %}
+  <form method="POST" action="">
+	  {{ form.csrf_token }}
+
+	  <fieldset class="form-field">{{ form.username.label }} {{ form.username }}
+		{% if form.username.errors %}
+		  <ul class="errors">
+			{% for error in form.username.errors %}
+			  <li class="error">
+				  <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+			  </li>
+			{% endfor %}
+		  </ul>
+		{% endif %}
+	  </fieldset>
+
+	  <fieldset class="form-field">{{ form.password.label }} {{ form.password }}
+		{% if form.password.errors %}
+		  <ul class="errors">
+			{% for error in form.password.errors %}
+			  <li class="error">
+				  <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+			  </li>
+			{% endfor %}
+		  </ul>
+		{% endif %}
+	  </fieldset>
+
+	  <fieldset class="form-field">{{ form.gymnasiumNumber.label }} {{ form.gymnasiumNumber }}
+		{% if form.gymnasiumNumber.errors %}
+		  <ul class="errors">
+			{% for error in form.gymnasiumNumber.errors %}
+			  <li class="error">
+				  <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+			  </li>
+			{% endfor %}
+		  </ul>
+		{% endif %}
+	  </fieldset>
+
+	{{ form.submit }}
+
+  </form>
+</div>
+{% endblock %}
