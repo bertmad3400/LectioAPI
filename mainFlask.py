@@ -90,11 +90,25 @@ def loadElev(externalID):
 
     dbResults = cur.fetchone()
 
+    if dbResults == None:
+        return None
+
     currentElev = Elev(pickle.loads(dbResults[2]), dbResults[1], elevID = dbResults[0])
 
     conn.close()
 
     return currentElev
+
+def logoutElev(externalID):
+
+    conn = sqlite3.connect(dbName)
+    removeElev(conn, externalID, False)
+    conn.close()
+
+    resp = redirect(url_for("login"))
+    resp.set_cookie("LectioAPI-ID", "", expires=0, secure = True, httponly = True)
+    return resp
+
 
 @app.before_request
 def extractUserObject():
@@ -104,7 +118,9 @@ def extractUserObject():
         g.currentElev = None
     elif not request.endpoint in allowedEndpoints and externalID:
         g.currentElev = loadElev(externalID)
-    elif not request.endpoint in allowedEndpoints :
+        if g.currentElev == None:
+            logoutElev(externalID)
+    elif not request.endpoint in allowedEndpoints:
         abort(401)
     else:
         g.currentElev = None
