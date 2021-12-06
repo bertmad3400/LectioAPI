@@ -98,9 +98,6 @@ def loadElev(externalID):
 
 @app.before_request
 def extractUserObject():
-    conn = sqlite3.connect(dbName)
-    cur = conn.cursor()
-    cur.execute("SELECT internalID, externalID, elevid, gymnasiumnumber FROM users")
 
     externalID = request.cookies.get("LectioAPI-ID", default=None)
 
