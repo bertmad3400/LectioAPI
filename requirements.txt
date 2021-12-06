@@ -3,3 +3,4 @@ pycryptodome
 bs4
 requests
 html5lib
+flask_wtf

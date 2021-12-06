@@ -1,4 +1,5 @@
-from flask import Flask, render_template, Response, request, abort, redirect, make_response, g
+from flask import Flask, render_template, Response, request, abort, redirect, make_response, g, stream_with_context, url_for
+from werkzeug.datastructures import Headers
 import json
 
 import uuid
@@ -9,16 +10,19 @@ import os
 
 from Crypto.Hash import SHA256
 
+import secrets
+
 from pathlib import Path
 
+import forms
 from backend.scraping import getPageSoup
 from backend.extract import extractGymnasiumList
 from backend.login import loginUser
 from backend.objects import Elev
 
 app = Flask(__name__)
-app.static_folder = "./static"
-app.template_folder = "./templates"
+app.static_folder = "./webfront/static"
+app.template_folder = "./webfront/templates"
 
 dbName = "users.db"
 
@@ -101,7 +105,7 @@ def extractUserObject():
 
     if not request.endpoint in allowedEndpoints and externalID:
         g.currentElev = loadElev(externalID)
-    elif not request.endpoint in allowedEndpoints:
+    elif not request.endpoint in allowedEndpoints and not request.path.startswith("/static/"):
         abort(401)
 
 def returnAPIResult(APIResults):
@@ -133,21 +137,38 @@ def listGymnasiums():
     return returnAPIResult(extractGymnasiumList(getPageSoup("https://www.lectio.dk/lectio/login_list.aspx?showall=1")))
 
 
-@app.route("/login/", methods=["POST"])
+@app.route("/login/", methods=["GET", "POST"])
 def login():
-    parameters = request.get_json(force=True)
+    form = forms.LoginForm()
 
-    userSession = loginUser(parameters["username"], parameters["password"], parameters["gymnasiumNumber"])
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        gymnasiumNumber = form.gymnasiumNumber.data
+
+    elif request.method == "POST":
+
+        parameters = request.get_json(force=True)
+
+        username = parameters["username"]
+        password = parameters["password"]
+        gymnasiumNumber = parameters["gymnasiumNumber"]
+
+    else:
+
+        return render_template("login.html", form=form)
+
+    userSession = loginUser(username, password, gymnasiumNumber)
 
     if userSession:
         try:
-            currentElev = Elev(userSession, 3)
+            currentElev = Elev(userSession, int(gymnasiumNumber))
         except TypeError:
             abort(500)
 
-        currentElevID = addElev(parameters["username"], parameters["password"],currentElev)
+        currentElevID = addElev(username, password, currentElev)
 
-        resp = make_response("user succesfully logged in")
+        resp = redirect(url_for("index"))
 
         resp.set_cookie("LectioAPI-ID", value = currentElevID, secure = True, httponly = True)
 
