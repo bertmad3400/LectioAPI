@@ -98,13 +98,16 @@ def loadElev(externalID):
 
 @app.before_request
 def extractUserObject():
-
     externalID = request.cookies.get("LectioAPI-ID", default=None)
 
-    if not request.endpoint in allowedEndpoints and externalID:
+    if request.path.startswith("/static/"):
+        g.currentElev = None
+    elif not request.endpoint in allowedEndpoints and externalID:
         g.currentElev = loadElev(externalID)
-    elif not request.endpoint in allowedEndpoints and not request.path.startswith("/static/"):
+    elif not request.endpoint in allowedEndpoints :
         abort(401)
+    else:
+        g.currentElev = None
 
 def returnAPIResult(APIResults):
     if APIResults == None:
