@@ -9,6 +9,8 @@ import os
 
 from Crypto.Hash import SHA256
 
+from pathlib import Path
+
 from backend.scraping import getPageSoup
 from backend.extract import extractGymnasiumList
 from backend.login import loginUser
@@ -22,6 +24,15 @@ dbName = "users.db"
 
 # Endpoints that are allowed without logging ind
 allowedEndpoints = ["listGymnasiums", "login", "redirectToGithub"]
+
+def loadSecretKey():
+    if os.path.isfile("./secret.key"):
+        app.secret_key = Path("./secret.key").read_text()
+    else:
+        currentSecretKey = secrets.token_urlsafe(256)
+        with os.fdopen(os.open(Path("./secret.key"), os.O_WRONLY | os.O_CREAT, 0o400), 'w') as file:
+            file.write(currentSecretKey)
+        app.secret_key = currentSecretKey
 
 def initiateDB():
     if os.path.exists(dbName):
@@ -185,6 +196,7 @@ def querySkema(year, week):
     APIResponse = g.currentElev.getSkema(year, week)
     return returnAPIResult(APIResponse)
 
+loadSecretKey()
 
 if __name__ == "__main__":
     initiateDB()
