@@ -19,6 +19,7 @@ from backend.scraping import getPageSoup
 from backend.extract import extractGymnasiumList
 from backend.login import loginUser
 from backend.objects import Elev
+from backend.calendar import opgaverToCalendar, generateCSVObject
 
 app = Flask(__name__)
 app.static_folder = "./webfront/static"
@@ -27,7 +28,7 @@ app.template_folder = "./webfront/templates"
 dbName = "users.db"
 
 # Endpoints that are allowed without logging ind
-allowedEndpoints = ["listGymnasiums", "login", "redirectToGithub"]
+allowedEndpoints = ["getCalendarFile", "listGymnasiums", "login", "redirectToGithub"]
 
 def loadSecretKey():
     if os.path.isfile("./secret.key"):
@@ -216,6 +217,14 @@ def queryLektier():
 def querySkema(year, week):
     APIResponse = g.currentElev.getSkema(year, week)
     return returnAPIResult(APIResponse)
+
+@app.route("/kalendar/opgaver/<int:year>/")
+def getCalendarFile(year):
+
+    opgaver = g.currentElev.getOpgaver(year)
+    calendarListe = opgaverToCalendar(opgaver)
+
+    return returnCSVFile("opgaveKalendar", calendarListe)
 
 loadSecretKey()
 
