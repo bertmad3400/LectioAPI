@@ -172,6 +172,8 @@ def login():
         password = form.password.data
         gymnasiumNumber = form.gymnasiumNumber.data
 
+        resp = redirect(url_for("index"))
+
     elif request.method == "POST":
 
         parameters = request.get_json(force=True)
@@ -179,6 +181,8 @@ def login():
         username = parameters["username"]
         password = parameters["password"]
         gymnasiumNumber = parameters["gymnasiumNumber"]
+
+        resp = make_response("Succesfully logged in")
 
     else:
 
@@ -193,8 +197,6 @@ def login():
             abort(500)
 
         currentElevID = addElev(username, password, currentElev)
-
-        resp = redirect(url_for("index"))
 
         resp.set_cookie("LectioAPI-ID", value = currentElevID, secure = True, httponly = True)
 
