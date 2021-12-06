@@ -28,7 +28,7 @@ app.template_folder = "./webfront/templates"
 dbName = "users.db"
 
 # Endpoints that are allowed without logging ind
-allowedEndpoints = ["getCalendarFile", "listGymnasiums", "login", "redirectToGithub"]
+allowedEndpoints = ["listGymnasiums", "login", "index"]
 
 def loadSecretKey():
     if os.path.isfile("./secret.key"):
