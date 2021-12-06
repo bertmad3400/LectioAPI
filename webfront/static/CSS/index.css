@@ -1,0 +1,20 @@
+div.button {
+	border: 1px solid #5eb9d7;
+	line-height: 2.3;
+	background: #5eb9d7;
+	color: white;
+
+	text-align: center;
+	vertical-align: middle;
+	line-height: 4rem;
+
+	transition: all .3s ease-out;
+
+}
+
+div.button:hover {
+	cursor: pointer;
+	background: white;
+	color: #5eb9d7;
+	padding: 0.6rem !important;
+}

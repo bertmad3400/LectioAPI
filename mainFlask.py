@@ -152,8 +152,11 @@ def returnCSVFile(filename, contentList):
     return app.response_class(stream_with_context(generateCSVObject(contentList)), mimetype='text/csv', headers=fileHeaders)
 
 @app.route("/")
-def redirectToGithub():
-    return redirect("https://github.com/bertmad3400/LectioAPI")
+def index():
+    if g.currentElev:
+        return render_template("index.html")
+    else:
+        return redirect(url_for("login"))
 
 @app.route("/gymnasieListe/")
 def listGymnasiums():
