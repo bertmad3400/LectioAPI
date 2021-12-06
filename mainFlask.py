@@ -129,6 +129,12 @@ def returnAPIResult(APIResults):
     else:
         return Response(json.dumps(APIResults), mimetype="application/json")
 
+def returnCSVFile(filename, contentList):
+    fileHeaders = Headers()
+    fileHeaders.add('Content-Disposition', f'attachment; filename={filename}.csv')
+
+    return app.response_class(stream_with_context(generateCSVObject(contentList)), mimetype='text/csv', headers=fileHeaders)
+
 @app.route("/")
 def redirectToGithub():
     return redirect("https://github.com/bertmad3400/LectioAPI")
