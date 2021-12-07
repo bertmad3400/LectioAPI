@@ -15,7 +15,8 @@ showAllEventTargetPattern = re.compile(r's\$m\$Content\$Content\$threadGV\$ctl.*
 beskedIDPattern = re.compile(r"(?<='__Page',').*?(?=')")
 beskedPadPattern = re.compile(r"(?<=padding-left:)[0-9\.]*?(?=em)")
 
-timePattern = re.compile(r"\d{1,2}\/\d{1,2}-\d{4} \d{2}:\d{2}")
+datePattern = re.compile(r"\d{1,2}\/\d{1,2}-\d{4}")
+timePattern = re.compile(r"\d{2}:\d{2}")
 
 def cleanText(text):
     return unicodedata.normalize("NFKD", text.replace("\t", "").replace("\n\n", "\n").strip("\n"))
@@ -214,15 +215,17 @@ def extractSkema(pageSoup):
             pieceInformations = skemaPiece.get("data-additionalinfo").split("\n")
 
             for i in range(0, 2):
-                if not timePattern.match(pieceInformations[i]) and pieceInformations[i] not in ["Aflyst!", "Ændret!"]:
+                if not datePattern.match(pieceInformations[i]) and pieceInformations[i] not in ["Aflyst!", "Ændret!"] and not pieceInformations[i].lower().startswith(("hold", "lærer", "lokale")):
                     currentPiece["Title"] = pieceInformations.pop(i)
                     break
 
             for pieceInformation in pieceInformations:
-                if timePattern.match(pieceInformation):
-                    date = pieceInformation.split(" ")
-                    currentPiece["start"] = f"{date[0]} {date[1]}"
-                    currentPiece["slut"] = f"{date[0]} {date[3]}" if "til" in date else ""
+                dates = datePattern.findall(pieceInformation)
+                times = timePattern.findall(pieceInformation)
+                if dates != [] and times != []:
+                    currentPiece["start"] = f"{dates[0]} {times[-1]}"
+                    currentPiece["slut"] = f"{dates[-1]} {times[-1]}"
+
                 elif pieceInformation in ["Aflyst!", "Ændret!"]:
                     currentPiece["status"] = pieceInformation
                 else:
