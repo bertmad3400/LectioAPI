@@ -19,7 +19,7 @@ from backend.scraping import getPageSoup
 from backend.extract import extractGymnasiumList
 from backend.login import loginUser
 from backend.objects import Elev
-from backend.calendar import opgaverToCalendar, generateCSVObject
+from backend.calendar import opgaverToCalendar, kalenderToCalendar, generateCSVObject
 
 app = Flask(__name__)
 app.static_folder = "./webfront/static"
@@ -253,6 +253,21 @@ def getCalendarFile(year):
     calendarListe = opgaverToCalendar(opgaver)
 
     return returnCSVFile("opgaveKalendar", calendarListe)
+
+@app.route("/kalender/skema/<int:year>/")
+def getSkemaCalendarFile(year):
+
+    skemaList = {}
+
+    for week in range(1, 53):
+        currentSkema = g.currentElev.getSkema(year, week)
+        if currentSkema:
+            skemaList[week] = currentSkema
+
+    calendarListe = kalenderToCalendar(skemaList)
+
+    return returnCSVFile("skemaKalendar", calendarListe)
+
 
 loadSecretKey()
 
