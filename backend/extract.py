@@ -202,16 +202,21 @@ def extractSkema(pageSoup):
 
     skema = {}
 
-    for i,day in enumerate(skemaDays):
-        skema[titles[i]] = {}
-        skema[titles[i]]["informationer"] = informations[i]
+    for dayNumber,day in enumerate(skemaDays):
+        skema[titles[dayNumber]] = {}
+        skema[titles[dayNumber]]["informationer"] = informations[dayNumber]
 
-        skema[titles[i]]["skemaBrikker"] = []
+        skema[titles[dayNumber]]["skemaBrikker"] = []
 
         for skemaPiece in day.select("a.s2bgbox"):
-            currentPiece = {"status" : "Uændret"}
+            currentPiece = {"status" : "Uændret", "Title" : "", "Hold" : "", "Lærer" : "", "Lokale" : ""}
             currentPiece["link"] = f"https://lectio.dk{skemaPiece.get('href')}"
             pieceInformations = skemaPiece.get("data-additionalinfo").split("\n")
+
+            for i in range(0, 2):
+                if not timePattern.match(pieceInformations[i]) and pieceInformations[i] not in ["Aflyst!", "Ændret!"]:
+                    currentPiece["Title"] = pieceInformations.pop(i)
+                    break
 
             for pieceInformation in pieceInformations:
                 if timePattern.match(pieceInformation):
@@ -222,9 +227,9 @@ def extractSkema(pageSoup):
                     currentPiece["status"] = pieceInformation
                 else:
                     for informationType in ["Hold", "Lærer", "Lokale"]:
-                        if informationType.lower() in pieceInformation.lower():
-                            currentPiece[informationType] = pieceInformation.split(" :")[-1]
+                        if pieceInformation.lower().startswith(informationType.lower()):
+                            currentPiece[informationType] = pieceInformation.split(": ")[-1]
 
-            skema[titles[i]]["skemaBrikker"].append(currentPiece)
+            skema[titles[dayNumber]]["skemaBrikker"].append(currentPiece)
 
     return skema
