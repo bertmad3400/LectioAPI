@@ -246,8 +246,8 @@ def querySkema(year, week):
     APIResponse = g.currentElev.getSkema(year, week)
     return returnAPIResult(APIResponse)
 
-@app.route("/kalendar/opgaver/<int:year>/")
-def getCalendarFile(year):
+@app.route("/kalender/opgaver/<int:year>/")
+def getOpgaveCalendarFile(year):
 
     opgaver = g.currentElev.getOpgaver(year)
     calendarListe = opgaverToCalendar(opgaver)
