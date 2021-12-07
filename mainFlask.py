@@ -114,12 +114,13 @@ def logoutElev(externalID):
 def extractUserObject():
     externalID = request.cookies.get("LectioAPI-ID", default=None)
 
+
     if request.path.startswith("/static/"):
         g.currentElev = None
-    elif not request.endpoint in allowedEndpoints and externalID:
+    elif externalID:
         g.currentElev = loadElev(externalID)
         if g.currentElev == None:
-            logoutElev(externalID)
+            return logoutElev(externalID)
     elif not request.endpoint in allowedEndpoints:
         abort(401)
     else:
