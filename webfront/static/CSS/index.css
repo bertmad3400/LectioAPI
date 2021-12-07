@@ -1,6 +1,5 @@
 div.button {
 	border: 1px solid #5eb9d7;
-	line-height: 2.3;
 	background: #5eb9d7;
 	color: white;
 
@@ -8,8 +7,11 @@ div.button {
 	vertical-align: middle;
 	line-height: 4rem;
 
-	transition: all .3s ease-out;
+	width: 90%;
+	margin: auto;
+	margin-top: 1.5rem;
 
+	transition: all .3s ease-out;
 }
 
 div.button:hover {
