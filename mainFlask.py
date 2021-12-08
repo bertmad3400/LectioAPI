@@ -119,6 +119,7 @@ def extractUserObject():
         g.currentElev = None
     elif externalID:
         g.currentElev = loadElev(externalID)
+        g.currentExternalID = externalID
         if g.currentElev == None:
             return logoutElev(externalID)
     elif not request.endpoint in allowedEndpoints:
@@ -205,6 +206,12 @@ def login():
 
     else:
         abort(500)
+
+@app.route("/logout/")
+def logout():
+    logoutElev(g.currentExternalID)
+    return redirect(url_for("login"))
+
 
 @app.route("/beskedListe/<string:beskedClass>/<int:year>/")
 def queryBeskeder(beskedClass, year):

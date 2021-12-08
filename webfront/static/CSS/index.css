@@ -20,3 +20,10 @@ div.button:hover {
 	color: #5eb9d7;
 	padding: 0.6rem !important;
 }
+
+hr {
+	margin-top: 1.5rem;
+	border-width: 0px;
+	background-color: #dbe3ec;
+	height: 1px;
+}
