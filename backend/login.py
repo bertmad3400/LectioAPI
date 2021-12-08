@@ -23,4 +23,4 @@ def loginUser(username, password, gymnasiumNumber):
         if getLoggedInPageSoup(f"https://www.lectio.dk/lectio/{gymnasiumNumber}/forside.aspx", session):
             return session
         else:
-            return None
+            raise Exception

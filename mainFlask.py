@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, request, abort, redirect, make_response, g, stream_with_context, url_for
+from flask import Flask, render_template, Response, request, abort, redirect, make_response, g, stream_with_context, url_for, flash
 from werkzeug.datastructures import Headers
 import json
 
@@ -192,22 +192,19 @@ def login():
         else:
             return render_template("login.html", form=form)
 
-    userSession = loginUser(username, password, gymnasiumNumber)
+    try:
+        userSession = loginUser(username, password, gymnasiumNumber)
+        currentElev = Elev(userSession, int(gymnasiumNumber))
+    except:
+        flash("Couldn't use these credentials, please try again.")
+        return redirect(url_for("login"))
 
-    if userSession:
-        try:
-            currentElev = Elev(userSession, int(gymnasiumNumber))
-        except TypeError:
-            abort(500)
+    currentElevID = addElev(username, password, currentElev)
 
-        currentElevID = addElev(username, password, currentElev)
+    resp.set_cookie("LectioAPI-ID", value = currentElevID, secure = True, httponly = True)
 
-        resp.set_cookie("LectioAPI-ID", value = currentElevID, secure = True, httponly = True)
+    return resp
 
-        return resp
-
-    else:
-        abort(500)
 
 @app.route("/logout/")
 def logout():
