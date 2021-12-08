@@ -123,7 +123,7 @@ def extractUserObject():
         if g.currentElev == None:
             return logoutElev(externalID)
     elif not request.endpoint in allowedEndpoints:
-        abort(401)
+        return redirect(url_for("index"))
     else:
         g.currentElev = None
 
