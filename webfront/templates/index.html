@@ -7,12 +7,12 @@
 <div class="form-wrapper">
 	<h2 class="title">Download - Lectio API</h2>
 
-	<a href="http://localhost:5000/kalender/opgaver/2021/">
+	<a href="{{ url_for('getOpgaveCalendarFile', year='2021') }}">
 		<div class="button">
 			Opgaver for 2021
 		</div>
 	</a>
-	<a href="http://localhost:5000/kalender/skema/2021/">
+	<a href="{{ url_for('getSkemaCalendarFile', year='2021') }}">
 		<div class="button">
 			Skema for 2021
 		</div>
@@ -20,7 +20,7 @@
 
 	<hr>
 
-	<a href="http://localhost:5000/logout/">
+	<a href="{{ url_for('logout') }}">
 		<div class="button">
 			Log ud
 		</div>
