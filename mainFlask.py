@@ -187,8 +187,10 @@ def login():
         resp = make_response("Succesfully logged in")
 
     else:
-
-        return render_template("login.html", form=form)
+        if g.currentElev:
+            return redirect(url_for("index"))
+        else:
+            return render_template("login.html", form=form)
 
     userSession = loginUser(username, password, gymnasiumNumber)
 
