@@ -22,7 +22,7 @@ def opgaverToCalendar(opgaveDicts):
     return opgaveLists
 
 def kalenderToCalendar(skemaDicts):
-    skemaList = [["Subject", "Start Date", "Start Time", "End Time", "Description"]]
+    skemaList = [["Subject", "Start Date", "Start Time", "End Date", "End Time", "Description"]]
     for week in skemaDicts:
         for day in skemaDicts[week]:
             for skemaBrik in skemaDicts[week][day]["skemaBrikker"]:
