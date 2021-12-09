@@ -11,6 +11,9 @@ from urllib.parse import urlparse, parse_qs
 
 import re
 
+# Used for creating deep copy of dict
+import copy
+
 showAllEventTargetPattern = re.compile(r's\$m\$Content\$Content\$threadGV\$ctl.*?(?=")')
 beskedIDPattern = re.compile(r"(?<='__Page',').*?(?=')")
 beskedPadPattern = re.compile(r"(?<=padding-left:)[0-9\.]*?(?=em)")
@@ -236,3 +239,34 @@ def extractSkema(pageSoup):
             skema[titles[dayNumber]]["skemaBrikker"].append(currentPiece)
 
     return skema
+
+def extractFravær(pageSoup):
+    fraværSoup = pageSoup.select_one("table#s_m_Content_Content_SFTabStudentAbsenceDataTable tbody:first-child").find_all("tr")
+
+    fraværSoup.pop(0).decompose()
+
+
+    titles = []
+    for i,selector in enumerate(["th[colspan]", "th[colspan]", "th"]):
+        titles.append([element.text for element in fraværSoup[i].select(selector)])
+
+    titlesDict = {}
+    for fraværsType in titles[0]:
+        titlesDict[fraværsType] = {}
+        for fraværsTime in titles[1]:
+            titlesDict[fraværsType][fraværsTime] = {}
+
+    fraværDict = {}
+
+    for row in itertools.islice(fraværSoup, 3, len(fraværSoup)):
+
+        currentRow = row.find_all("td")
+        currentFag = currentRow.pop(0).text
+        fraværDict[currentFag] = copy.deepcopy(titlesDict)
+
+        for i,collumn in enumerate(currentRow):
+            currentTitles = [ titles[titleIndex][int((i / len(titles[-1])) * len(titles[titleIndex]))] for titleIndex in range(3) ]
+
+            fraværDict[currentFag][currentTitles[0]][currentTitles[1]][currentTitles[2]] = collumn.text
+
+    return fraværDict
