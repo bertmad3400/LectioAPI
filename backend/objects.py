@@ -58,3 +58,8 @@ class Elev():
         skemaSoup = getLoggedInPageSoup(f"{self.rootURL}SkemaNy.aspx?type=elev&elevid={self.elevID}&week={str(week)}{str(year)}", self.session)
 
         return extract.extractSkema(skemaSoup) if skemaSoup else skemaSoup
+
+    def getFravær(self, year):
+        otherASPData = {"s$m$ChooseTerm$term" : str(year)}
+        opgaverSoup = self.postLoggedInPageSoup(f"{self.rootURL}subnav/fravaerelev.aspx?elevid={self.elevID}", "s$m$ChooseTerm$term", otherASPData)
+        return extract.extractFravær(opgaverSoup) if opgaverSoup else opgaverSoup
