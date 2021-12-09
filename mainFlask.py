@@ -274,6 +274,11 @@ def getSkemaCalendarFile(year):
 
     return returnCSVFile("skemaKalendar", calendarListe)
 
+@app.route("/fravær/<int:year>/")
+def getFravær(year):
+    APIResponse = g.currentElev.getFravær(year)
+    return returnAPIResult(APIResponse)
+
 
 loadSecretKey()
 
