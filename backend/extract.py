@@ -240,33 +240,47 @@ def extractSkema(pageSoup):
 
     return skema
 
-def extractFravær(pageSoup):
-    fraværSoup = pageSoup.select_one("table#s_m_Content_Content_SFTabStudentAbsenceDataTable tbody:first-child").find_all("tr")
+def createTitleDict(titles, initialDict):
+    if len(titles) < 2:
+        return
 
-    fraværSoup.pop(0).decompose()
+    currentTitles = titles[0]
 
+    for title in currentTitles:
+        initialDict[title] = {}
+        createTitleDict(titles[1:], initialDict[title])
+
+def extractTable(tableSoup, titleHeight):
+
+    tableSoup.select_one("tr:first-child th:first-child").decompose()
 
     titles = []
-    for i,selector in enumerate(["th[colspan]", "th[colspan]", "th"]):
-        titles.append([element.text for element in fraværSoup[i].select(selector)])
+
+    collumns = tableSoup.find_all("tr")
+
+    for i in range(titleHeight):
+        titles.append([element.text for element in collumns[i].select("th")])
 
     titlesDict = {}
-    for fraværsType in titles[0]:
-        titlesDict[fraværsType] = {}
-        for fraværsTime in titles[1]:
-            titlesDict[fraværsType][fraværsTime] = {}
 
-    fraværDict = {}
+    createTitleDict(titles, titlesDict)
 
-    for row in itertools.islice(fraværSoup, 3, len(fraværSoup)):
+    dataDict = {}
+
+    for row in itertools.islice(collumns, titleHeight, len(collumns)):
 
         currentRow = row.find_all("td")
         currentFag = currentRow.pop(0).text
-        fraværDict[currentFag] = copy.deepcopy(titlesDict)
+        dataDict[currentFag] = copy.deepcopy(titlesDict)
 
         for i,collumn in enumerate(currentRow):
-            currentTitles = [ titles[titleIndex][int((i / len(titles[-1])) * len(titles[titleIndex]))] for titleIndex in range(3) ]
+            currentTitles = [ titles[titleIndex][int((i / len(titles[-1])) * len(titles[titleIndex]))] for titleIndex in range(titleHeight) ]
 
-            fraværDict[currentFag][currentTitles[0]][currentTitles[1]][currentTitles[2]] = collumn.text
+            currentDataDict = dataDict[currentFag]
 
-    return fraværDict
+            for titleNumber in range(titleHeight - 1):
+                currentDataDict = currentDataDict[currentTitles[titleNumber]]
+
+            currentDataDict[currentTitles[-1]] = collumn.text.strip()
+
+    return dataDict
