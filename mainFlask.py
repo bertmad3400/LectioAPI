@@ -145,7 +145,7 @@ def returnAPIResult(APIResults):
     elif APIResults == False:
         return make_response("Error scraping the page, please check your request", 400)
     else:
-        return Response(json.dumps(APIResults), mimetype="application/json")
+        return Response(json.dumps(APIResults, default=str), mimetype="application/json")
 
 def streamFile(filename, content, fileType):
     fileHeaders = Headers()
