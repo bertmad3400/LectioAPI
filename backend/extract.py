@@ -284,3 +284,11 @@ def extractTable(tableSoup, titleHeight):
             currentDataDict[currentTitles[-1]] = collumn.text.strip()
 
     return dataDict
+
+def extractFravær(pageSoup):
+    tableSoup = pageSoup.select_one("table#s_m_Content_Content_SFTabStudentAbsenceDataTable tbody:first-child")
+    tableSoup.select_one("tr:first-child").decompose()
+    return extractTable(tableSoup, 3)
+
+def extractFraværImageURL(pageSoup):
+    return "https://lectio.dk" + pageSoup.select_one("div#s_m_Content_Content_SFTabGraphicViewIsland_pa img:first-child").get("src")
