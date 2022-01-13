@@ -292,3 +292,31 @@ def extractFravær(pageSoup):
 
 def extractFraværImageURL(pageSoup):
     return "https://lectio.dk" + pageSoup.select_one("div#s_m_Content_Content_SFTabGraphicViewIsland_pa img:first-child").get("src")
+
+def extractKarakterBevis(pageSoup):
+    tableSoup = pageSoup.select_one("div#printareaDiplomaLines table tbody:first-child")
+    return extractTable(tableSoup, 2)
+
+def extractCurrentKarakterer(pageSoup):
+    tableSoup = pageSoup.select_one("table#s_m_Content_Content_karakterView_KarakterGV tbody:first-child")
+
+    for row in tableSoup.find_all("tr"):
+        row.select_one("th:first-child,td:first-child").decompose()
+
+    return extractTable(tableSoup, 1)
+
+def extractKarakterComment(pageSoup):
+    tableSoup = pageSoup.select_one("table#s_m_Content_Content_karakterView_KarakterNoterGrid tbody")
+    return extractTable(tableSoup, 1)
+
+def extractKarakterComment(pageSoup):
+    tableSoup = pageSoup.select_one("table#s_m_Content_Content_karakterView_KarakterNoterGrid tbody")
+    return extractTable(tableSoup, 1)
+
+def extractKarakterProtokol(pageSoup):
+    tableSoup = pageSoup.select_one("table#s_m_Content_Content_ProtokolLinierGrid tbody")
+
+    for row in tableSoup.find_all("tr"):
+        row.insert(0, row.find_all("td,th")[3])
+
+    return extractTable(tableSoup, 1)
