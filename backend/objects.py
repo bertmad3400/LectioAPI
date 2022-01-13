@@ -67,7 +67,12 @@ class Elev():
 
         return extract.extractSkema(skemaSoup) if skemaSoup else skemaSoup
 
-    def getFravær(self, year):
+    def getFravær(self, year, image=False):
         otherASPData = {"s$m$ChooseTerm$term" : str(year)}
         opgaverSoup = self.postLoggedInPageSoup(f"{self.rootURL}subnav/fravaerelev.aspx?elevid={self.elevID}", "s$m$ChooseTerm$term", otherASPData)
-        return extract.extractFravær(opgaverSoup) if opgaverSoup else opgaverSoup
+        if image and opgaverSoup:
+            return self.getImage(extract.extractFraværImageURL(opgaverSoup))
+        elif opgaverSoup:
+            return extract.extractFravær(opgaverSoup)
+        else:
+            return opgaverSoup
