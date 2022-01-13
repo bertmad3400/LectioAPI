@@ -227,8 +227,10 @@ def extractSkema(pageSoup):
                 times = timePattern.findall(pieceInformation)
 
                 if dates != [] and times != []:
-                    currentPiece["start"] = f"{dates[0]} {times[0]}"
-                    currentPiece["slut"] = f"{dates[-1]} {times[-1]}"
+                    currentPiece["start"] = datetime.strptime(f"{dates[0]} {times[0]}", '%d/%m-%Y %H:%M')
+                    currentPiece["slut"] = datetime.strptime(f"{dates[-1]} {times[-1]}", '%d/%m-%Y %H:%M')
+
+                    print(currentPiece)
 
                 elif pieceInformation in ["Aflyst!", "Ændret!"]:
                     currentPiece["status"] = pieceInformation
