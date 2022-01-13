@@ -76,3 +76,20 @@ class Elev():
             return extract.extractFravær(opgaverSoup)
         else:
             return opgaverSoup
+
+    def getKarakterer(self, year, karakterType):
+        otherASPData = {"s$m$ChooseTerm$term" : str(year)}
+        karakterSoup = self.postLoggedInPageSoup(f"{self.rootURL}grades/grade_report.aspx?elevid={self.elevID}", "s$m$ChooseTerm$term", otherASPData)
+
+        if not karakterSoup:
+            return karakterSoup
+        elif karakterType == "bevis":
+            return extract.extractKarakterBevis(karakterSoup)
+        elif karakterType == "nuværende":
+            return extract.extractCurrentKarakterer(karakterSoup)
+        elif karakterType == "kommentar":
+            return extract.extractKarakterComment(karakterSoup)
+        elif karakterType == "protokol":
+            return extract.extractKarakterProtokol(karakterSoup)
+        else:
+            return False
