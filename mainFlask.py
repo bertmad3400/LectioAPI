@@ -147,11 +147,15 @@ def returnAPIResult(APIResults):
     else:
         return Response(json.dumps(APIResults), mimetype="application/json")
 
-def returnCSVFile(filename, contentList):
+def streamFile(filename, content, fileType):
     fileHeaders = Headers()
-    fileHeaders.add('Content-Disposition', f'attachment; filename={filename}.csv')
+    fileHeaders.add('Content-Disposition', f'attachment; filename={filename}.{fileType}')
 
-    return app.response_class(stream_with_context(generateCSVObject(contentList)), mimetype='text/csv', headers=fileHeaders)
+    if fileType == "csv":
+        return app.response_class(stream_with_context(generateCSVObject(content)), mimetype='text/csv', headers=fileHeaders)
+    else:
+        return app.response_class(stream_with_context(content), mimetype=f'text/{fileType}', headers=fileHeaders)
+
 
 @app.route("/")
 def index():
@@ -258,7 +262,7 @@ def getOpgaveCalendarFile(year):
     opgaver = g.currentElev.getOpgaver(year)
     calendarListe = opgaverToCalendar(opgaver)
 
-    return returnCSVFile("opgaveKalendar", calendarListe)
+    return streamFile("opgaveKalendar", calendarListe, "csv")
 
 @app.route("/kalender/skema/<int:year>/")
 def getSkemaCalendarFile(year):
@@ -272,7 +276,7 @@ def getSkemaCalendarFile(year):
 
     calendarListe = kalenderToCalendar(skemaList)
 
-    return returnCSVFile("skemaKalendar", calendarListe)
+    return streamFile("skemaKalendar", calendarListe, "csv")
 
 @app.route("/fravær/<int:year>/")
 def getFravær(year):
