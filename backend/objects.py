@@ -65,6 +65,16 @@ class Elev():
     def getSkema(self, year, week):
         skemaSoup = getLoggedInPageSoup(f"{self.rootURL}SkemaNy.aspx?type=elev&elevid={self.elevID}&week={week:02}{str(year)}", self.session)
 
+        if skemaSoup:
+            skema = extract.extractSkema(skemaSoup)
+
+            for day in skema:
+                skema[day]["skemaBrikker"].sort(key=lambda brik:brik['start'])
+
+            return skema
+        else:
+            return skemaSoup
+
         return extract.extractSkema(skemaSoup) if skemaSoup else skemaSoup
 
     def getFravær(self, year, image=False):
