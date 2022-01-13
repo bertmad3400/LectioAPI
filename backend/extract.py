@@ -225,8 +225,9 @@ def extractSkema(pageSoup):
             for pieceInformation in pieceInformations:
                 dates = datePattern.findall(pieceInformation)
                 times = timePattern.findall(pieceInformation)
+
                 if dates != [] and times != []:
-                    currentPiece["start"] = f"{dates[0]} {times[-1]}"
+                    currentPiece["start"] = f"{dates[0]} {times[0]}"
                     currentPiece["slut"] = f"{dates[-1]} {times[-1]}"
 
                 elif pieceInformation in ["Aflyst!", "Ændret!"]:
