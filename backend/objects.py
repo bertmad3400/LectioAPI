@@ -63,7 +63,7 @@ class Elev():
         return extract.extractBesked(beskedSoup) if beskedSoup else beskedSoup
 
     def getSkema(self, year, week):
-        skemaSoup = getLoggedInPageSoup(f"{self.rootURL}SkemaNy.aspx?type=elev&elevid={self.elevID}&week={str(week)}{str(year)}", self.session)
+        skemaSoup = getLoggedInPageSoup(f"{self.rootURL}SkemaNy.aspx?type=elev&elevid={self.elevID}&week={week:02}{str(year)}", self.session)
 
         return extract.extractSkema(skemaSoup) if skemaSoup else skemaSoup
 
