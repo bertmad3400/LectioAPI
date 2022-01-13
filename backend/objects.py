@@ -1,6 +1,7 @@
 from backend import extract
 from backend.scraping import getPageSoup, getLoggedInPageSoup
 
+import io
 
 class Elev():
     def __init__(self, session, gymnasiumNumber, elevID = None):
@@ -27,6 +28,13 @@ class Elev():
             return getLoggedInPageSoup(URL, self.session, ASPData)
 
         else:
+            return None
+
+    def getImage(self, imageURL):
+        print(imageURL)
+        try:
+            return io.BytesIO(self.session.get(imageURL).content)
+        except TypeError:
             return None
 
     def getOpgaver(self, year):
