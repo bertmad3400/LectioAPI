@@ -8,6 +8,8 @@ import sqlite3
 import pickle
 import os
 
+from datetime import datetime, date
+
 from Crypto.Hash import SHA256
 
 import secrets
@@ -255,6 +257,34 @@ def queryLektier():
 def querySkema(year, week):
     APIResponse = g.currentElev.getSkema(year, week)
     return returnAPIResult(APIResponse)
+
+@app.route("/skema/næste/")
+def queryNextTime():
+    skema = g.currentElev.getSkema(date.today().isocalendar()[0], date.today().isocalendar()[1])
+
+    if skema:
+        for day in skema:
+            for brik in skema[day]["skemaBrikker"]:
+                if brik["start"] > datetime.now() and brik["status"] != "Aflyst!":
+                    return returnAPIResult(brik)
+
+        return make_response("Der er ikke flere timer denne uge.")
+    else:
+        return returnAPIResult(skema)
+
+@app.route("/skema/nuværende/")
+def queryCurrentTime():
+    skema = g.currentElev.getSkema(date.today().isocalendar()[0], date.today().isocalendar()[1])
+
+    if skema:
+        for day in skema:
+            for brik in skema[day]["skemaBrikker"]:
+                if brik["start"] > datetime.now() and brik["slut"] < datetime.now() and brik["status"] != "Aflyst!":
+                    return returnAPIResult(brik)
+
+        return make_response("Der er ikke en time i øjeblikket.")
+    else:
+        return returnAPIResult(skema)
 
 @app.route("/kalender/opgaver/<int:year>/")
 def getOpgaveCalendarFile(year):
