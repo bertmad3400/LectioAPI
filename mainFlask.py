@@ -283,6 +283,24 @@ def getFravær(year):
     APIResponse = g.currentElev.getFravær(year)
     return returnAPIResult(APIResponse)
 
+@app.route("/fravær/image/<int:year>/")
+def getFraværImage(year):
+    imageObject = g.currentElev.getFravær(year, image=True)
+
+    if imageObject:
+        return streamFile("fraværBillede", imageObject, "jpeg")
+    else:
+        abort(500)
+
+@app.route("/karakterer/<string:karakterType>/<int:year>/")
+def getKarakterBevis(karakterType, year):
+    APIResponse = g.currentElev.getKarakterer(year, karakterType)
+
+    if APIResponse == False:
+        return make_response("Didn't recognize karakterTypen")
+
+    return returnAPIResult(APIResponse)
+
 
 loadSecretKey()
 
